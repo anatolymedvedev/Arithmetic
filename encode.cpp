@@ -11,7 +11,7 @@ const unsigned short int batch = 8; //кол-во символов, кот. мы
 
 int main()
 {
-	ifstream file("input.txt");
+    ifstream file("input.txt");
     if (!file)
     {
         cerr << "Crash!1" << endl;;
@@ -22,18 +22,18 @@ int main()
         cerr << "Crash!2" << endl;
     }
 
-	map<char, int> freq;
+    map<char, int> freq;
     char s;
-	unsigned long long count = 0;
+    unsigned long long count = 0;
     //подсчитываем частоты символов и кол-во считанных символов
     while ((s = file.get()) && !file.eof())                     
     {															
-		freq[s]++;
-		count++;											
-	}
+	freq[s]++;
+	count++;											
+    }
 
     file.clear();
-	file.seekg(0);
+    file.seekg(0);
 
     int freq_size = freq.size();
     result.write((char*)&batch, sizeof(batch));
@@ -49,7 +49,7 @@ int main()
     for(iter = freq.begin(); iter != freq.end(); ++iter)
     {
         result.write((char*)&iter->first, sizeof(iter->first));
-		result.write((char*)&iter->second, sizeof(iter->second));
+	result.write((char*)&iter->second, sizeof(iter->second));
 
         table[iter->first] = new double[3];
         table[iter->first][0] = double(iter->second) / double(count);       //считаем вероятность для символа
@@ -72,7 +72,7 @@ int main()
     double right = 1;
     count = 0;                              //следит за упаковкой batch
     while ((s = file.get()) && !file.eof())
-	{
+    {
         double l = left + table[s][1]*(right - left);
         double r = left + table[s][2]*(right - left);
         left = l;
@@ -106,30 +106,30 @@ int main()
     }
 
     if (count % batch)
+    {
+	uint64_t temp = 0;
+	double num = 0;
+	int i = 0;
+	while (!((left <= num) && (num < right)))
 	{
-		uint64_t temp = 0;
-		double num = 0;
-		int i = 0;
-		while (!((left <= num) && (num < right)))
+		i++;
+		if (1 / pow(2, i) + num < right)
 		{
-			i++;
-			if (1 / pow(2, i) + num < right)
-			{
-				num += 1 / pow(2, i);
-				temp |= (uint64_t(1) << (i - 1));
-			}
+			num += 1 / pow(2, i);
+			temp |= (uint64_t(1) << (i - 1));
 		}
-		for (int i = 0; i < 7; i++)
-		{
-			unsigned char bit = (temp >> (i * 8)) & 255;
-			result.write((char*)&bit, sizeof(bit));
-		}
+	}
+	for (int i = 0; i < 7; i++)
+	{
+		unsigned char bit = (temp >> (i * 8)) & 255;
+		result.write((char*)&bit, sizeof(bit));
+	}
         left = 0;
         right = 1;
         i = 0;
-	}
+    }
 
     file.close();
     result.close();
-	return 0;
+    return 0;
 }
