@@ -22,13 +22,13 @@ int main()
 
     int freq_size;
     int freq;
-	  unsigned short int batch;
-	  unsigned long long count = 0;
+    unsigned short int batch;
+    unsigned long long count = 0;
     char s;
 
-	  file.read((char*)&batch, sizeof(batch));
-	  file.read((char*)&count, sizeof(count));
-	  file.read((char*)&freq_size, sizeof(freq_size));
+    file.read((char*)&batch, sizeof(batch));
+    file.read((char*)&count, sizeof(count));
+    file.read((char*)&freq_size, sizeof(freq_size));
 
     map <char, double*> table;
     double a = 0;
@@ -41,60 +41,60 @@ int main()
         table[s] = new double[3];
         table[s][0] = double(freq) / double(count);
         b = a + table[s][0];
-		    table[s][1] = a;
-		    table[s][2] = b;
-		    a = b;
+	table[s][1] = a;
+	table[s][2] = b;
+	a = b;
         freq_size--;
     }
 
-	  // map<char, double*>:: iterator it;
+    // map<char, double*>:: iterator it;
     // for (it = table.begin(); it != table.end(); ++it)
     // {
     //     cout << it->first << "--" << table[it->first][1] << "--" << table[it->first][2] << "::" << table[it->first][0] << endl;
     // }
 
     double num = 0;
-	  int temp = batch;
+    int temp = batch;
     while(count > 0)
     {
-      double left = 0;
-		  double right = 1;
-        
-		  for (int j = 0; j < 7; j++)
+      	  double left = 0;
+	  double right = 1;
+
+	  for (int j = 0; j < 7; j++)
+	  {
+		  char buf;
+		  file.read((char*)&buf, sizeof(buf));
+		  for (int i = 0; i < 8; i++)
 		  {
-			  char buf;
-			  file.read((char*)&buf, sizeof(buf));
-			  for (int i = 0; i < 8; i++)
+			  if ((1 << i) & buf)
 			  {
-				  if ((1 << i) & buf)
-				  {
-					  num += double(1) / pow(2, (j * 8) + i + 1);
-				  }
+				  num += double(1) / pow(2, (j * 8) + i + 1);
 			  }
 		  }
+	  }
 
-		  for (int i = batch; i > 0; i--)
+	  for (int i = batch; i > 0; i--)
+	  {
+		  for (auto c : table)
 		  {
-			  for (auto c : table)
+			  double l = left + table[c.first][1] * (right - left);
+			  double r = left + table[c.first][2] * (right - left);
+			  if (l <= num && num < r)
 			  {
-				  double l = left + table[c.first][1] * (right - left);
-				  double r = left + table[c.first][2] * (right - left);
-				  if (l <= num && num < r)
-				  {
-					  count--;
-					  left = l;
-					  right = r;
-					  result << c.first;
-					  break;
-				  }
-			  }
-			  if (!count) 
-			  {
+				  count--;
+				  left = l;
+				  right = r;
+				  result << c.first;
 				  break;
 			  }
 		  }
-		  num = 0;
+		  if (!count) 
+		  {
+			  break;
+		  }
 	  }
+	  num = 0;
+    }
 
     file.close();
     result.close();
