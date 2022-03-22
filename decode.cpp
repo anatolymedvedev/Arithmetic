@@ -93,6 +93,11 @@ int main()
 			  break;
 		  }
 	  }
+	  temp = batch;
+	  if (file.peek() == EOF)
+	  {
+	  	break;
+	  }
 	  num = 0;
     }
 
