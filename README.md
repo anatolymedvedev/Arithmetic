@@ -1,0 +1,3 @@
+# Arithmetic coding
+Реализован алгоритм сжатия информации без потерь, который при кодировании ставит в соответствие тексту вещественное число из отрезка [0;1). [Идея алгоритма](https://habr.com/ru/articles/130531/).  
+В проекте реализована как [кодировка](https://github.com/anatolymedvedev/Arithmetic/blob/main/encode.cpp) данных, так и [расшифровка](https://github.com/anatolymedvedev/Arithmetic/blob/main/decode.cpp). Данные, которые нужно закодировать представлены в файле [input.txt](https://github.com/anatolymedvedev/Arithmetic/blob/main/input.txt). После кодировки, закодированные данные можно увидеть в файле [output.txt](https://github.com/anatolymedvedev/Arithmetic/blob/main/output.txt).
